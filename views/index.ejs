@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" />
+    <!-- Fetch manifest so ejs can find vites produktion file in produktion-->
+    <% if (process.env.NODE_ENV === 'production' && typeof manifest !== 'undefined') { %>
+        <% const entry = manifest['src/client/main.ts']; %>
+        
+        <% if (entry && entry.css) { %>
+            <% entry.css.forEach(function(cssFile) {<!--console.log("cssFile\n",cssFile)-->%>
+                <link rel="stylesheet" href="/<%= cssFile %>">
+            <% }); %>
+        <% } %>
+    <% } %>
+    <title>Manager</title>
+</head>
+<body class="bg-white min-h-screen h-screen flex flex-col">
+    <!--{/* Nav bar */}-->
+    <header class="bg-white basis-[5%] w-full flex flex-row items-stretch">
+        <div class="bg-gray-200 w-[5%] flex justify-center items-center p-2"><h2>IMG</h2></div>
+        <div class="bg-gray-200 flex-1 flex items-center p-2"><h2>Sector 2</h2></div>
+        <div class="bg-gray-200 flex-1 flex items-center p-2"><h2>Sector 3</h2></div>
+    </header>
+
+    <!--{/* Sidebar + Core */}-->
+    <div class="bg-red-50 flex-1 w-full flex flex-row">
+        <!--{/* Sidebar */}-->
+        <div class="bg-gray-200 basis-[5%] flex flex-col p-2">
+            <h2 class="mt-20">Sidebar 1</h2>
+            <h2 class="mt-20">Sidebar 2</h2>
+            <h2 class="mt-20">Sidebar 3</h2>
+            <h2 class="mt-20">Sidebar 4</h2>
+        </div>
+
+        <!--{/* Core */}-->
+        <div class="bg-white flex-1 flex justify-center items-stretch">
+            <main class="flex-1">
+                <div class="bg-blue-200 basis-[5%] flex flex-col p-2">
+                    <h2 class="mt-30 flex-1">Sidebar 1</h2>
+                    <h2 class="mt-30 flex-1">Sidebar 2</h2>
+                    <h2 class="mt-30 flex-1">Sidebar 3</h2>
+                    <h2 class="mt-30 flex-1">Sidebar 4</h2>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <% if (process.env.NODE_ENV === 'production') { %>
+        <script type="module" src="/<%= manifest['src/client/main.ts'].file %>"></script>
+    <% } else { %>
+        <script>
+            (function() {
+                // Docker: livereload host is the host machine
+                var host = window.location.hostname; // works in Docker & native
+                var script = document.createElement('script');
+                script.src = 'http://' + host + ':35729/livereload.js?snipver=1';
+                document.head.appendChild(script);
+            })();
+        </script>
+        <script type="module" src="/@vite/client"></script>
+        <script type="module" src="/src/client/main.ts"></script>
+    <% } %>
+</body>
+</html>

@@ -1,0 +1,12 @@
+services:
+    manager:
+        build:
+            context: .
+            target: production # Specifically targets the prod stage in your Dockerfile
+        container_name: manager_prod
+        ports:
+            - '1337:1337' # Only the Express port
+        environment:
+            - NODE_ENV=production
+            - DBWEBB_PORT=1337
+        restart: always # Ensures the app restarts if it crashes or the server reboots

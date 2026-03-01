@@ -1,0 +1,11 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        //"outDir": "dist/client", Vite makes its own output
+        "lib": ["DOM", "DOM.Iterable", "ESNext"],
+        "types": ["vite/client"]
+    },
+    "include": ["src/client"]
+}

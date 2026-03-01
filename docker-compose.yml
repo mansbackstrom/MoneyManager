@@ -1,0 +1,18 @@
+services:
+    manager:
+        build:
+            context: .
+            target: development
+        container_name: manager_dev
+        ports:
+            - '1337:1337' # Express server
+            - '5173:5173' # Vite dev server HMR
+            - '35729:35729' # LiveReload for EJS
+        volumes:
+            - .:/app
+            - /app/node_modules
+        environment:
+            - NODE_ENV=development
+            - DBWEBB_PORT=1337
+        stdin_open: true
+        tty: true
