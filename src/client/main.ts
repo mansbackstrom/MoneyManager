@@ -7,52 +7,71 @@
 // Import Tailwind CSS
 import './main.css';
 
-// 1. Select elements with proper types
-const add_income = document.getElementById('add_income') as HTMLButtonElement | null;
-const container = document.getElementById('test') as HTMLDivElement | null;
-const total_income_display = document.getElementById('total-income-display') as HTMLSpanElement | null;
+// En gemensam lyssnare för hela formen
+const form = document.querySelector('form');
 
-// 2. The calculation function
-const calculateTotal = (): void => {
-    if (!total_income_display) return;
-
+// Funktioner
+function updateSectionTotal(section: Element) {
+    // Hitta alla inmatningsfält i just denna sektion
+    const inputs = section.querySelectorAll('.income-amount') as NodeListOf<HTMLInputElement>;;
     let total = 0;
-    // We cast the NodeList to an array of Input elements
-    const inputs = document.querySelectorAll('.income-amount') as NodeListOf<HTMLInputElement>;
     
     inputs.forEach(input => {
-        // parseFloat handles decimals; || 0 handles empty strings
         const val = parseFloat(input.value) || 0;
         total += val;
     });
 
-    total_income_display.textContent = total.toFixed(2);
-};
+    console.log(total);
 
-// 3. Add Item Button Logic
-add_income?.addEventListener('click', () => {
-    // Note: Added 'income-amount' class and type="number"
-    const incomeRowHtml = `
-        <div class="flex-1 flex">
-            <input class="m-2.5 p-2 rounded-md bg-white shadow-lg border-2 border-purple-200" type="text" placeholder="Income Source">
-            <input class="income-amount m-2.5 p-2 rounded-md bg-white shadow-lg border-2 border-purple-200" 
-                   type="number" 
-                   step="0.01" 
-                   placeholder="0.00">
-            <button class="delete-btn ml-2 text-red-500 hover:text-red-700 transition-colors" type="button">
-                🗑️
-            </button>
-        </div>`;
+    // Hitta display-elementet i denna sektion (klassen total-amount i din HTML)
     
-    container?.insertAdjacentHTML('beforeend', incomeRowHtml);
+    const display = section.querySelector('.total-amount');
+    console.log(display);
+    if (display) {
+        display.textContent = total.toLocaleString('sv-SE', { 
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2 
+        });
+    }
+}
+
+form?.addEventListener('click', (e: Event) => {
+    const target = e.target as HTMLElement
+
+    // Hantera ADD
+    if (target.classList.contains('add-btn')) {
+        // Gå upp till den stora boxen som innehåller allt
+        const section = target.closest('.main-category-box'); 
+
+        // Leta NERÅT inuti den boxen efter containern
+        const container = section?.querySelector('.row-container');
+        
+        const newRow = `
+            <div class="income-row flex-1 flex">
+                <input class="m-2.5 p-2 rounded-md bg-white shadow-lg border-2 border-purple-200" type="text" placeholder="Source">
+                <input class="income-amount m-2.5 p-2 rounded-md bg-white shadow-lg border-2 border-purple-200" 
+                    type="number" 
+                    step="0.01" 
+                    placeholder="0.00">
+                <button class="rem-btn m-2.5 p-2 rounded-md bg-white shadow-lg border-2 border-red-500 font-mono text-red-500 transition-colors hover:bg-red-500 hover:text-white" type="button">
+                    -
+                </button>
+            </div>`;
+        
+        container?.insertAdjacentHTML('beforeend', newRow);
+    }
+
+    // Hantera REM
+    if (target.classList.contains('rem-btn')) {
+        target.closest('.income-row')?.remove();
+    }
 });
 
-// 4. Event Delegation for Live Updates
-// We listen on the container so even NEWLY added inputs trigger the calculation
-container?.addEventListener('input', (e: Event) => {
+form?.addEventListener('input', (e: Event) => {
     const target = e.target as HTMLInputElement;
-    
+
     if (target.classList.contains('income-amount')) {
-        calculateTotal();
+        const section = target.closest('.main-category-box');
+        if (section) updateSectionTotal(section);
     }
 });
