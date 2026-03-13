@@ -3,7 +3,7 @@ services:
         build:
             context: .
             target: development
-        container_name: manager_dev
+        container_name: moneymanager_dev
         ports:
             - '1337:1337' # Express server
             - '5173:5173' # Vite dev server HMR
